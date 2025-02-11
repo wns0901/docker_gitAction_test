@@ -1,28 +1,68 @@
-name: Java CI with Gradle
+name: Build and Deploy to EC2
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      - uses: actions/checkout@v4
 
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build -x test
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-  
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4.0.0
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build -x test
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t your-dockerhub-username/your-app-name:latest .
+          docker push your-dockerhub-username/your-app-name:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker pull your-dockerhub-username/your-app-name:latest
+            docker run -d -p 80:80 \
+              -e SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }} \
+              -e SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }} \
+              -e SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }} \
+              -e SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }} \
+              -e SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }} \
+              -e SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }} \
+              -e SPRING_GOOGLE_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }} \
+              -e SPRING_GOOGLE_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }} \
+              -e SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }} \
+              -e SPRING_CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }} \
+              -e SPRING_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }} \
+              -e SPRING_OAUTH2_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }} \
+              -e SPRING_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }} \
+              -e SPRING_S3_REGION=${{ secrets.SPRING_S3_REGION }} \
+              -e SPRING_S3_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }} \
+              -e SPRING_S3_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }} \
+              -e SPRING_GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }} \
+              your-dockerhub-username/your-app-name:latest
