@@ -1,2 +1,85 @@
+server:
+  port: 80
+
+  tomcat:
+    max-http-form-post-size: 10GB
+
 spring:
   application.name: CrewDock
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_MYSQL_URL}
+    username: ${SPRING_MYSQL_USERNAME}
+    password: ${SPRING_MYSQL_PASSWORD}
+
+
+    data:
+      mongodb:
+        uri: ${SPRING_MONGODB_URI}
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+    hibernate:
+      ddl-auto: update
+
+  servlet:
+    # Multipart request 의 업로드 파일 크기 제한 설정
+    multipart:
+      max-file-size: 10GB # 요청 파일 하나의 최대 크기
+      max-request-size: 10GB # 요청 파일 전체의 최대 크기
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${SPRING_GOOGLE_CLIENT_ID}
+            client-secret: ${SPRING_GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_GOOGLE_MAIL_USERNAME}
+    password: ${SPRING_GOOGLE_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+jwt:
+  secret: ${SPRING_JWT_SECRET}
+
+# cors 관련 설정값들
+cors:
+  allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS}
+
+app:
+  oauth2:
+    password: ${SPRING_OAUTH2_PASSWORD}
+    auth-redirect-uri: ${SPRING_OAUTH2_REDIRECT_URI}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${SPRING_S3_BUCKET}
+    stack.auto: false
+    region.static: ${SPRING_S3_REGION}
+    credentials:
+      accessKey: ${SPRING_S3_ACCESS_KEY}
+      secretKey: ${SPRING_S3_SECRET_KEY}
+
+redis:
+  host: localhost
+  port: 6379
+
+github:
+  token: ${SPRING_GITHUB_TOKEN}
