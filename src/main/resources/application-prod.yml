@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_MYSQL_URL}
+    url: jdbc:mysql://${SPRING_MYSQL_HOST}:3306/${SPRING_MYSQL_DB}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: ${SPRING_MYSQL_USERNAME}
     password: ${SPRING_MYSQL_PASSWORD}
 
