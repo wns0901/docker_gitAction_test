@@ -33,17 +33,37 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker image
-        run: |  
+        run: |
           docker build -f ./Dockerfile -t wns0901/docker-test:latest .
           docker push wns0901/docker-test:latest
 
-      - name: ec2 서버에 docker-compose.yml 전송
+      - name: Create .env file
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_MYSQL_URL }}" > .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}" >> .env
+          echo "SPRING_DATA_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}" >> .env
+          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}" >> .env
+          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}" >> .env
+          echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }}" >> .env
+          echo "JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}" >> .env
+          echo "CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }}" >> .env
+          echo "APP_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }}" >> .env
+          echo "APP_OAUTH2_AUTH_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }}" >> .env
+          echo "CLOUD_AWS_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }}" >> .env
+          echo "CLOUD_AWS_REGION_STATIC=${{ secrets.SPRING_S3_REGION }}" >> .env
+          echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }}" >> .env
+          echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }}" >> .env
+          echo "GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }}" >> .env
+
+      - name: Upload files to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: ./docker-compose.yml
+          source: "docker-compose.yml,.env"
           target: /home/ubuntu/
 
   deploy:
@@ -58,28 +78,13 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
             sudo /usr/local/bin/docker-compose --version
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            sudo /usr/local/bin/docker-compose down || true
-            export SPRING_MYSQL_HOST=${{ secrets.SPRING_MYSQL_HOST }}
-            export SPRING_MYSQL_DB=${{ secrets.SPRING_MYSQL_DB }}
-            export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}
-            export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}
-            export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}
-            export SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}
-            export SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}
-            export SPRING_GOOGLE_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}
-            export SPRING_GOOGLE_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }}
-            export SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}
-            export SPRING_CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }}
-            export SPRING_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }}
-            export SPRING_OAUTH2_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }}
-            export SPRING_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }}
-            export SPRING_S3_REGION=${{ secrets.SPRING_S3_REGION }}
-            export SPRING_S3_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }}
-            export SPRING_S3_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }}
-            export SPRING_GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }}
+            if sudo /usr/local/bin/docker-compose ps | grep -q "Up"; then
+              sudo /usr/local/bin/docker-compose down
+            fi
             cd /home/ubuntu
+            sudo /usr/local/bin/docker-compose pull
             sudo /usr/local/bin/docker-compose up -d

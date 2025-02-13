@@ -1,90 +1,47 @@
-server:
-  port: 80
-
-  tomcat:
-    max-http-form-post-size: 10GB
-
 spring:
   application.name: CrewDock
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${SPRING_MYSQL_HOST}:3306/${SPRING_MYSQL_DB}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: ${SPRING_MYSQL_USERNAME}
-    password: ${SPRING_MYSQL_PASSWORD}
-
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   data:
     mongodb:
-      uri: ${SPRING_MONGODB_URI}
-
-  jpa:
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
-    hibernate:
-      ddl-auto: update
-
-  servlet:
-    # Multipart request 의 업로드 파일 크기 제한 설정
-    multipart:
-      max-file-size: 10GB # 요청 파일 하나의 최대 크기
-      max-request-size: 10GB # 요청 파일 전체의 최대 크기
+      uri: ${SPRING_DATA_MONGODB_URI}
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${SPRING_GOOGLE_CLIENT_ID}
-            client-secret: ${SPRING_GOOGLE_CLIENT_SECRET}
-            scope:
-              - email
-              - profile
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET}
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${SPRING_GOOGLE_MAIL_USERNAME}
-    password: ${SPRING_GOOGLE_MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          timeout: 5000
-          starttls:
-            enable: true
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
 
 jwt:
-  secret: ${SPRING_JWT_SECRET}
+  secret: ${JWT_SECRET}
 
-# cors 관련 설정값들
 cors:
-  allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 app:
   oauth2:
-    password: ${SPRING_OAUTH2_PASSWORD}
-    auth-redirect-uri: ${SPRING_OAUTH2_REDIRECT_URI}
+    password: ${APP_OAUTH2_PASSWORD}
+    auth-redirect-uri: ${APP_OAUTH2_AUTH_REDIRECT_URI}
 
 cloud:
   aws:
     s3:
-      bucket: ${SPRING_S3_BUCKET}
-    stack.auto: false
-    region.static: ${SPRING_S3_REGION}
+      bucket: ${CLOUD_AWS_S3_BUCKET}
+    region.static: ${CLOUD_AWS_REGION_STATIC}
     credentials:
-      accessKey: ${SPRING_S3_ACCESS_KEY}
-      secretKey: ${SPRING_S3_SECRET_KEY}
-
-redis:
-  host: localhost
-  port: 6379
+      accessKey: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+      secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
 
 github:
-  token: ${SPRING_GITHUB_TOKEN}
-
-logging:
-  level:
-    root: INFO
-    com.lec.spring: DEBUG
+  token: ${GITHUB_TOKEN}
