@@ -34,7 +34,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t ${{secrets.DOCKER_USERNAME}}/your-app-name .
+          docker build -t your-app-name .
           docker push ${{secrets.DOCKER_USERNAME}}/your-app-name
 
   deploy:
