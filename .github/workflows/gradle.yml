@@ -63,7 +63,7 @@ jobs:
             sudo /usr/local/bin/docker-compose --version
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo /usr/local/bin/docker-compose down || true
-            export SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }}
+            export SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }} >> /home/ubuntu/env_vars.txt
             export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}
             export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}
             export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}
