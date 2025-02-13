@@ -64,9 +64,9 @@ jobs:
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo /usr/local/bin/docker-compose down || true
             export SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }} >> /home/ubuntu/env_vars.txt
-            export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}
-            export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}
-            export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}
+            export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }} >> /home/ubuntu/env_vars.txt
+            export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }} >> /home/ubuntu/env_vars.txt
+            export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }} >> /home/ubuntu/env_vars.txt
             export SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}
             export SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}
             export SPRING_GOOGLE_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}
