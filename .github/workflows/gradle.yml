@@ -63,23 +63,23 @@ jobs:
             sudo /usr/local/bin/docker-compose --version
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo /usr/local/bin/docker-compose down || true
-            export SPRING_MYSQL_URL="${{ secrets.SPRING_MYSQL_URL }}"
+            export SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }}
             echo "SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }}" >> /home/ubuntu/env_vars.txt
-            export SPRING_MYSQL_USERNAME="${{ secrets.SPRING_MYSQL_USERNAME }}"
-            export SPRING_MYSQL_PASSWORD="${{ secrets.SPRING_MYSQL_PASSWORD }}"
-            export SPRING_MONGODB_URI="${{ secrets.SPRING_MONGODB_URI }}"
-            export SPRING_GOOGLE_CLIENT_ID="${{ secrets.SPRING_GOOGLE_CLIENT_ID }}"
-            export SPRING_GOOGLE_CLIENT_SECRET="${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}"
-            export SPRING_GOOGLE_MAIL_USERNAME="${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}"
-            export SPRING_GOOGLE_MAIL_PASSWORD="${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }}"
-            export SPRING_JWT_SECRET="${{ secrets.SPRING_JWT_SECRET }}"
-            export SPRING_CORS_ALLOWED_ORIGINS="${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }}"
-            export SPRING_OAUTH2_PASSWORD="${{ secrets.SPRING_OAUTH2_PASSWORD }}"
-            export SPRING_OAUTH2_REDIRECT_URI="${{ secrets.SPRING_OAUTH2_REDIRECT_URI }}"
-            export SPRING_S3_BUCKET="${{ secrets.SPRING_S3_BUCKET }}"
-            export SPRING_S3_REGION="${{ secrets.SPRING_S3_REGION }}"
-            export SPRING_S3_ACCESS_KEY="${{ secrets.SPRING_S3_ACCESS_KEY }}"
-            export SPRING_S3_SECRET_KEY="${{ secrets.SPRING_S3_SECRET_KEY }}"
-            export SPRING_GITHUB_TOKEN="${{ secrets.SPRING_GITHUB_TOKEN }}"
+            export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}
+            export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}
+            export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}
+            export SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}
+            export SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}
+            export SPRING_GOOGLE_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}
+            export SPRING_GOOGLE_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }}
+            export SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}
+            export SPRING_CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }}
+            export SPRING_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }}
+            export SPRING_OAUTH2_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }}
+            export SPRING_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }}
+            export SPRING_S3_REGION=${{ secrets.SPRING_S3_REGION }}
+            export SPRING_S3_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }}
+            export SPRING_S3_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }}
+            export SPRING_GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }}
             cd /home/ubuntu
             sudo /usr/local/bin/docker-compose up -d
