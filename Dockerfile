@@ -6,7 +6,7 @@ COPY ${JAR_FILE} app.jar
 
 EXPOSE 80
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod \
+ENTRYPOINT ["java -jar -Dspring.profiles.active=prod \
   -Dspring.datasource.url=${SPRING_MYSQL_URL} \
   -Dspring.datasource.username=${SPRING_MYSQL_USERNAME} \
   -Dspring.datasource.password=${SPRING_MYSQL_PASSWORD} \
@@ -23,5 +23,5 @@ ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod \
   -Dcloud.aws.region.static=${SPRING_S3_REGION} \
   -Dcloud.aws.credentials.accessKey=${SPRING_S3_ACCESS_KEY} \
   -Dcloud.aws.credentials.secretKey=${SPRING_S3_SECRET_KEY} \
-  -Dgithub.token=${SPRING_GITHUB_TOKEN}",
-  "/app.jar"]
+  -Dgithub.token=${SPRING_GITHUB_TOKEN} \
+  /app.jar"]
