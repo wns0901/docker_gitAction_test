@@ -83,3 +83,8 @@ redis:
 
 github:
   token: ${SPRING_GITHUB_TOKEN}
+
+logging:
+  level:
+    root: INFO
+    com.lec.spring: DEBUG
