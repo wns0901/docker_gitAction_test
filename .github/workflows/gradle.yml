@@ -33,15 +33,24 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker image
-        run: |
-          docker build -t your-app-name .
-          docker push ${{secrets.DOCKER_USERNAME}}/your-app-name
+        run: |  
+          docker build -f ./Dockerfile -t test-docker:latest .
+          docker push ${{secrets.DOCKER_USERNAME}}/test-docker:latest
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
+      - name: ec2 서버에 docker-compose.yml 전송
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          source: ./docker-compose.yml
+          target: /home/ubuntu/
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -49,25 +58,23 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            docker stop your-app-name || true
-            docker rm your-app-name || true
-            docker pull ${{secrets.DOCKER_USERNAME}}/your-app-name
-            docker run -d -p 80:80 \
-              -e SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }} \
-              -e SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }} \
-              -e SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }} \
-              -e SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }} \
-              -e SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }} \
-              -e SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }} \
-              -e SPRING_GOOGLE_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }} \
-              -e SPRING_GOOGLE_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }} \
-              -e SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }} \
-              -e SPRING_CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }} \
-              -e SPRING_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }} \
-              -e SPRING_OAUTH2_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }} \
-              -e SPRING_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }} \
-              -e SPRING_S3_REGION=${{ secrets.SPRING_S3_REGION }} \
-              -e SPRING_S3_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }} \
-              -e SPRING_S3_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }} \
-              -e SPRING_GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }} \
-              ${{secrets.DOCKER_USERNAME}}/your-app-name
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker-compose down || true
+            export SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }}
+            export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}
+            export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}
+            export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}
+            export SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}
+            export SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}
+            export SPRING_GOOGLE_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}
+            export SPRING_GOOGLE_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }}
+            export SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}
+            export SPRING_CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }}
+            export SPRING_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }}
+            export SPRING_OAUTH2_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }}
+            export SPRING_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }}
+            export SPRING_S3_REGION=${{ secrets.SPRING_S3_REGION }}
+            export SPRING_S3_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }}
+            export SPRING_S3_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }}
+            export SPRING_GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }}
+            docker-compose up -d
