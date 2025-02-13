@@ -54,3 +54,7 @@ cloud:
 
 github:
   token: ${GITHUB_TOKEN}
+
+redis:
+  host: localhost
+  port: 6379
