@@ -66,7 +66,9 @@ jobs:
             export SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }}
             echo "SPRING_MYSQL_URL=${{ secrets.SPRING_MYSQL_URL }}" >> /home/ubuntu/env_vars.txt
             export SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}
+            echo SPRING_MYSQL_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }} >> /home/ubuntu/env_vars.txt
             export SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}
+            echo SPRING_MYSQL_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }} >> /home/ubuntu/env_vars.txt
             export SPRING_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}
             export SPRING_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}
             export SPRING_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}
