@@ -37,11 +37,6 @@ jobs:
           docker build -f ./Dockerfile -t wns0901/docker-test:latest .
           docker push wns0901/docker-test:latest
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
       - name: ec2 서버에 docker-compose.yml 전송
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -51,6 +46,11 @@ jobs:
           script: |
             scp ./docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.5
         with:
