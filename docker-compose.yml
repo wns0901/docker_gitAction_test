@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: docker-test
+    image: wns0901/docker-test:latest
     ports:
       - "80:80"
 
