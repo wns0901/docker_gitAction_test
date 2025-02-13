@@ -19,6 +19,16 @@ public class EnvironmentVariablesLogger implements CommandLineRunner {
     @Value("${SPRING_MONGODB_URI}")
     private String mongodbUri;
 
+
+    public EnvironmentVariablesLogger() {
+        System.out.println("EnvironmentVariablesLogger() 생성");
+        System.out.println("SPRING_MYSQL_URL: " + mysqlUrl);
+        System.out.println("SPRING_MYSQL_USERNAME: " + mysqlUsername);
+        System.out.println("SPRING_MYSQL_PASSWORD: " + mysqlPassword);
+        System.out.println("SPRING_MONGODB_URI: " + mongodbUri);
+    }
+
+
     @Override
     public void run(String... args) throws Exception {
         System.out.println("SPRING_MYSQL_URL: " + mysqlUrl);
