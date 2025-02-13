@@ -35,7 +35,7 @@ jobs:
       - name: Build and Push Docker image
         run: |  
           docker build -f ./Dockerfile -t test-docker:latest .
-          docker push ${{secrets.DOCKER_USERNAME}}/test-docker:latest
+          docker push wns0901/docker-test:latest
 
   deploy:
     runs-on: ubuntu-latest
